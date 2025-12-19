@@ -238,7 +238,7 @@ HFC_MAX_CONCURRENT_SESSIONS=3
 
 ## Python SDK
 
-A Python SDK is included for easier integration. See [sdk/README.md](sdk/README.md) for full documentation.
+A Python SDK is included for easier integration. See [sdk/README.md]([sdk/README.md](https://github.com/michalboryczko/Headfull-Chrome-python-sdk/blob/main/README.md)) for full documentation.
 
 **Quick example:**
 ```python
