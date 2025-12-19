@@ -1,0 +1,59 @@
+services:
+  headfull-chrome:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: headfull-chrome
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      - HFC_LOG_LEVEL=${HFC_LOG_LEVEL:-INFO}
+      - HFC_DEBUG=${HFC_DEBUG:-false}
+      - HFC_MAX_CONCURRENT_SESSIONS=${HFC_MAX_CONCURRENT_SESSIONS:-5}
+    volumes:
+      # Mount source for development (hot reload)
+      - ./src:/app/src:ro
+      # Persist logs
+      - ./logs:/var/log/headfull-chrome
+    # Required for Chrome to run properly
+    shm_size: "2gb"
+    # Security: allow Chrome sandbox to work
+    cap_add:
+      - SYS_ADMIN
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
+        reservations:
+          cpus: "0.5"
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # Development variant with hot reload
+  headfull-chrome-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: headfull-chrome-dev
+    ports:
+      - "${DEV_API_PORT:-8001}:8000"
+    environment:
+      - HFC_LOG_LEVEL=DEBUG
+      - HFC_DEBUG=true
+      - HFC_MAX_CONCURRENT_SESSIONS=${HFC_MAX_CONCURRENT_SESSIONS:-5}
+    volumes:
+      - ./src:/app/src:ro
+      - ./logs:/var/log/headfull-chrome
+    shm_size: "2gb"
+    cap_add:
+      - SYS_ADMIN
+    profiles:
+      - dev
